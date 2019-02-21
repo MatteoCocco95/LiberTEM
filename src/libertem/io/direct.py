@@ -21,7 +21,7 @@ def open_direct(path):
     """
     open `path` for reading with O_DIRECT
     """
-    fh = os.open(path, os.O_RDONLY|os.O_DIRECT)
+    fh = os.open(path, os.O_RDONLY | os.O_DIRECT)
     f = open(fh, "rb", buffering=0)
     yield f
     os.close(fh)

@@ -1,6 +1,5 @@
 import contextlib
 import itertools
-import mmap
 import os
 
 import numpy as np
@@ -36,7 +35,7 @@ class DirectRawFileReader(object):
 
     def readinto(self, out):
         return readinto_direct(self._file, out)
-    
+
     def seek_frame(self, idx):
         self._file.seek(self._calc_offset(idx))
 
@@ -99,7 +98,7 @@ class DirectRawFileDataSet(DataSet):
     def get_partitions(self):
         num_frames = self.shape.nav.size
         f_per_part = num_frames // self._get_num_partitions()
-        
+
         c0 = itertools.count(start=0, step=f_per_part)
         c1 = itertools.count(start=f_per_part, step=f_per_part)
         for (start, stop) in zip(c0, c1):
@@ -137,7 +136,9 @@ class DirectRawFilePartition(Partition):
     def get_tiles(self, crop_to=None):
         if crop_to is not None:
             if crop_to.shape.sig != self.meta.shape.sig:
-                raise DataSetException("DirectRawFileDataSet only supports whole-frame crops for now")
+                raise DataSetException(
+                    "DirectRawFileDataSet only supports whole-frame crops for now"
+                )
         stackheight = self.stackheight
         start_frame = self.start_frame
         num_frames = self.num_frames
@@ -163,7 +164,7 @@ class DirectRawFilePartition(Partition):
                                 sig_dims=sig_dims)
                 )
                 if crop_to is not None:
-                    intersection = tile_slice.intersection_with(crop_to)
+                    intersection = tileslice.intersection_with(crop_to)
                     if intersection.is_null():
                         continue
                 data = reader.readinto(buf)
